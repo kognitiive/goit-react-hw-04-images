@@ -1,7 +1,8 @@
-import { Puff } from  'react-loader-spinner'
+import { Puff } from 'react-loader-spinner'
+import { Wrapper } from './Loader.styled'
 
 export const Loader = () => {
-    return (<Puff
+    return (<Wrapper><Puff
   height="100"
   width="100"
   radisu={1}
@@ -10,4 +11,4 @@ export const Loader = () => {
   wrapperStyle={{}}
   wrapperClass=""
   visible={true}
-/>)}
+/></Wrapper>)}
