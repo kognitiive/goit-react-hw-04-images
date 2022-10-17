@@ -38,8 +38,6 @@ export default class App extends Component {
             status: 'resolved',
             pictures: [...prevState.pictures, ...response.data.hits],
           }))
-
-          console.log(this.state)
         })
         .catch(error => this.setState({ error, status: 'rejected' }));
     }
