@@ -2,9 +2,20 @@ import React, { Component } from "react";
 import { Overlay, ModalStl } from "./Modal.styled";
 
 export class Modal extends Component { 
-    componentDidMount() { }
+    componentDidMount() {
+        window.addEventListener('keydown', this.addToggleOnEsc)
+     }
 
-    componentWillUnmount() { }
+    componentWillUnmount() {
+        window.removeEventListener('keydown', this.addToggleOnEsc)
+     }
+
+    addToggleOnEsc = e => {
+        if (e.code === 'Escape') {
+            this.props.onClose();
+        }
+        
+     }
 
     render() { 
         return (

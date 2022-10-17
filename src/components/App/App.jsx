@@ -21,21 +21,25 @@ export default class App extends Component {
   }
   
   componentDidUpdate(prevProps, prevState) {
-    if (prevState.query !== this.state.query) { this.setState({pictures: [] }) }
     if (prevState.query !== this.state.query || prevState.page !== this.state.page) {
       this.setState({ status: 'pending' });
       imagesAPI(this.state.query, this.state.page)
         .then(response => {
-          console.log(response)
+          const pages = Math.ceil(response.data.totalHits / 12);
           if (response.data.total === 0) {
-              this.setState({ status: 'rejected'})
+            this.setState({
+              status: 'rejected',
+            })
                 return Promise.reject(new Error(`We haven't any pictures for your query ${this.state.query}`))
           }
                      
           this.setState(prevState => ({
+            pages: pages,
             status: 'resolved',
             pictures: [...prevState.pictures, ...response.data.hits],
           }))
+
+          console.log(this.state)
         })
         .catch(error => this.setState({ error, status: 'rejected' }));
     }
@@ -46,7 +50,7 @@ export default class App extends Component {
   }
 
   handleFormSubmit = query => {
-    this.setState({query, page: 1})
+    this.setState({query, page: 1, pages: 1, pictures: [],})
   }
   render() {
     return (
@@ -54,8 +58,8 @@ export default class App extends Component {
         <Searchbar onSubmit={this.handleFormSubmit} />
         {this.state.status === 'idle'&& <div>Enter your query young padavan</div>}
         {this.state.pictures.length > 0 && <ImageGallery pictures={this.state.pictures} />}
-        {this.state.status === 'pending' && <Loader/>}
-        {this.state.pictures.length > 0 && <Button updatePage={this.updatePage} />}
+        {this.state.status === 'pending'  && <Loader/>}
+        {(this.state.pictures.length > 0 && this.state.page !== this.state.pages) && <Button updatePage={this.updatePage} />}
         {this.state.status === 'rejected' && <div>We haven't any pictures for your query {this.state.query}</div>}
         <ToastContainer/>
       </Container>

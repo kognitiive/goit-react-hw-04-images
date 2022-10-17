@@ -18,11 +18,10 @@ export default class ImageGalleryItem extends Component {
     }
     render() {
         const {src, alt, showModal, modalURL} = this.state
-        console.log(src, alt, showModal, modalURL)
         return (
             <ListItem onClick={this.toggleModal}>
         <ListItemImage src={src} alt={alt} />
-        {showModal && <Modal><img src={modalURL} alt={alt} /></Modal>}
+                {showModal && <Modal onClose={this.toggleModal}><img src={modalURL} alt={alt} /></Modal>}
             </ListItem>);
     }
     
