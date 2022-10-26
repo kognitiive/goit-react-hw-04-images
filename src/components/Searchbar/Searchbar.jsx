@@ -1,47 +1,45 @@
-import { Component } from "react"
+import { useState } from "react"
 import { toast } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
 import {BsSearch} from "react-icons/bs"
 
 import { SearchHeader, SearchForm, SearchFormButton, SearchFormButtonSpan, SearchFormInput } from "./Searchbar.styled";
 
-export default class Searchbar extends Component {
-    state = {
-        query: '',
+export default function Searchbar({onSubmit}) { 
+    const [query, setQuery] = useState('')
+
+    const handleQueryChange = e => { 
+        setQuery(e.currentTarget.value.toLowerCase());
     }
 
-    handleQueryChange = e => { 
-        this.setState({ query: e.currentTarget.value.toLowerCase() });
-    }
-
-    handleSubmit = e => { 
+    const handleSubmit = e => { 
         e.preventDefault()
 
-        if (this.state.query.trim() === '') {
+        if (query.trim() === '') {
            return toast.error("Enter search name");
         }
-        this.props.onSubmit(this.state.query)
-        this.setState({ query: '' });
+        onSubmit(query)
+        setQuery('');
     }
-    render() {
-        return (
-            <SearchHeader>
-                <SearchForm onSubmit={this.handleSubmit}>
-                    <SearchFormButton type="submit">
-                        <BsSearch/><SearchFormButtonSpan>Search</SearchFormButtonSpan>
-                    </SearchFormButton>
 
-                    <SearchFormInput
+    return(
+        <SearchHeader>
+            <SearchForm onSubmit={handleSubmit}>
+                <SearchFormButton type="submit">
+                    <BsSearch/><SearchFormButtonSpan>Search</SearchFormButtonSpan>
+                </SearchFormButton>
+
+                <SearchFormInput
                         type="text"
                         autoComplete="off"
                         autoFocus
                         placeholder="Search images and photos"
-                        onChange={this.handleQueryChange}
-                        value={this.state.query}
+                        onChange={handleQueryChange}
+                        value={query}
                         name = "query"
-                    />
-                </SearchForm>
-            </SearchHeader>
-        );
-} 
+                />
+            </SearchForm>
+        </SearchHeader>
+    );
 }
+    

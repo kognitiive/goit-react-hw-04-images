@@ -1,4 +1,4 @@
-import { Component } from "react";
+import { useEffect, useState } from "react";
 import { ToastContainer } from "react-toastify";
 import { imagesAPI } from "services/images-api";
 
@@ -8,59 +8,62 @@ import { Loader } from "components/Loader/Loader";
 import { Button } from "components/Button/Button";
 
 import { Container } from "./App.styled";
+import { useRef } from "react";
 
+export default function App() {
+  const [pictures, setPictures] = useState([])
+  const [status, setStatus] = useState('idle')
+  const [error, setError] = useState(null)
+  const [query, setQuery] = useState('')
+  const [page, setPage] = useState(1)
+  const [pages, setPages] = useState(1)
+  const isFirstRender = useRef(true)
 
-export default class App extends Component {
-  state = {
-    pictures: [],
-    status:'idle',
-    error: null,
-    query: '',
-    page: 1,
-    pages: 1,
-  }
-  
-  componentDidUpdate(prevProps, prevState) {
-    if (prevState.query !== this.state.query || prevState.page !== this.state.page) {
-      this.setState({ status: 'pending' });
-      imagesAPI(this.state.query, this.state.page)
-        .then(response => {
-          const pages = Math.ceil(response.data.totalHits / 12);
-          if (response.data.total === 0) {
-            this.setState({
-              status: 'rejected',
-            })
-                return Promise.reject(new Error(`We haven't any pictures for your query ${this.state.query}`))
-          }
-                     
-          this.setState(prevState => ({
-            pages: pages,
-            status: 'resolved',
-            pictures: [...prevState.pictures, ...response.data.hits],
-          }))
-        })
-        .catch(error => this.setState({ error, status: 'rejected' }));
+  useEffect(() => {
+    if (query === '') {
+      return
     }
+    setStatus('pending');
+    imagesAPI(query, page)
+      .then(response => {
+        const pages = Math.ceil(response.data.totalHits / 12);
+        if (response.data.total === 0) {
+          setStatus('rejected')
+          return Promise.reject(new Error(`We haven't any pictures for your query ${query}`))
+        }
+          
+        setPages(pages)
+        setStatus('resolved')
+        
+        setPictures(prevPictures => { return [...prevPictures, ...response.data.hits] })
+          
+      })
+      .catch(error => {
+        setError(error)
+        setStatus('rejected')
+      });
+  }, [query, page])
+
+  const updatePage = () => {
+    setPage(page + 1)
   }
 
-  updatePage = () => {
-    this.setState(prevState => ( { page: prevState.page + 1 }))
+  const handleFormSubmit = query => {
+    setQuery(query)
+    setPage(1)
+    setPages(1)
+    setPictures([])
   }
 
-  handleFormSubmit = query => {
-    this.setState({query, page: 1, pages: 1, pictures: [],})
-  }
-  render() {
-    return (
+  return (
       <Container>
-        <Searchbar onSubmit={this.handleFormSubmit} />
-        {this.state.status === 'idle'&& <div>Enter your query young padavan</div>}
-        {this.state.pictures.length > 0 && <ImageGallery pictures={this.state.pictures} />}
-        {this.state.status === 'pending'  && <Loader/>}
-        {(this.state.pictures.length > 0 && this.state.page !== this.state.pages) && <Button updatePage={this.updatePage} />}
-        {this.state.status === 'rejected' && <div>We haven't any pictures for your query {this.state.query}</div>}
+        <Searchbar onSubmit={handleFormSubmit} />
+        {status === 'idle'&& <div>Enter your query young padavan</div>}
+        {pictures.length > 0 && <ImageGallery newPictures={pictures} />}
+        {status === 'pending'  && <Loader/>}
+        {(pictures.length > 0 && page !== pages) && <Button updatePage={updatePage} />}
+        {status === 'rejected' && <div>We haven't any pictures for your query {query}</div>}
         <ToastContainer/>
       </Container>
     );
-  } 
-};
+}

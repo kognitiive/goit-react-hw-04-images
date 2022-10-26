@@ -1,29 +1,20 @@
 import { Modal } from "components/Modal/Modal";
-import { Component } from "react";
+import { useState } from "react";
 import { ListItem, ListItemImage } from "./ImageGalleryItem.styled";
 
+export default function ImageGalleryItem({ src, alt, modalURL }) {
+    
+    const [itemShowModal, setItemShowModal] = useState(false)
 
-export default class ImageGalleryItem extends Component {
-    state = {
-        src: this.props.src,
-        alt: this.props.alt,
-        modalURL: this.props.modalURL,
-        showModal: false,
-    }
+    const toggleModal = () => { 
+        setItemShowModal(previItemShowModal => { return !previItemShowModal })
 
-    toggleModal = () => { 
-        this.setState(({ showModal }) => ({ 
-            showModal: !showModal
-        }))
-    }
-    render() {
-        const {src, alt, showModal, modalURL} = this.state
         return (
-            <ListItem onClick={this.toggleModal}>
-        <ListItemImage src={src} alt={alt} />
-                {showModal && <Modal onClose={this.toggleModal}><img src={modalURL} alt={alt} /></Modal>}
+            <ListItem>
+            <ListItemImage src={src} alt={alt} />
+                {/* {itemShowModal && <Modal onClose={toggleModal}><img src={modalURL} alt={alt} /></Modal>} */}
             </ListItem>);
     }
-    
-    
 }
+
+// onClick={toggleModal}
