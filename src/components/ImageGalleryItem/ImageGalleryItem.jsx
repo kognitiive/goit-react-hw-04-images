@@ -10,9 +10,9 @@ export default function ImageGalleryItem({ src, alt, modalURL }) {
         setItemShowModal(previItemShowModal => { return !previItemShowModal })
 
         return (
-            <ListItem>
+            <ListItem onClick={toggleModal}>
             <ListItemImage src={src} alt={alt} />
-                {/* {itemShowModal && <Modal onClose={toggleModal}><img src={modalURL} alt={alt} /></Modal>} */}
+                {itemShowModal && <Modal onClose={toggleModal}><img src={modalURL} alt={alt} /></Modal>}
             </ListItem>);
     }
 }
