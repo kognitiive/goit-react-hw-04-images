@@ -8,16 +8,13 @@ import { Loader } from "components/Loader/Loader";
 import { Button } from "components/Button/Button";
 
 import { Container } from "./App.styled";
-// import { useRef } from "react";
 
 export default function App() {
   const [pictures, setPictures] = useState([])
   const [status, setStatus] = useState('idle')
-  // const [error, setError] = useState(null)
   const [query, setQuery] = useState('')
   const [page, setPage] = useState(1)
   const [pages, setPages] = useState(1)
-  // const isFirstRender = useRef(true)
 
   useEffect(() => {
     if (query === '') {
@@ -44,7 +41,7 @@ export default function App() {
   }, [query, page])
 
   const updatePage = () => {
-    setPage(page + 1)
+    setPage(prevPage => { return prevPage + 1})
   }
 
   const handleFormSubmit = query => {
